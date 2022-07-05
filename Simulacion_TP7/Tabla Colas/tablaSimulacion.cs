@@ -207,9 +207,40 @@ namespace Simulacion_TP7.Tabla_Colas
                 fila_actual.personas = fila_anterior.personas;
                 fila_actual.personas_ocupando_mesa = fila_anterior.personas_ocupando_mesa;
 
-                // Arrastro métricas
+                // Cálculo de métricas de ocupación (se calculan aquí ya que necesitan conocer estados de la fila actual antes de que se arrastren los de la anterior) ------------------------------------------------------------------------
 
                 fila_actual.porc_ocupacion_caja = fila_anterior.porc_ocupacion_caja;
+
+                // Se calcula % de ocupacion de la caja, para ello calculo el tiempo ocupado de la caja (Métrica 1)
+
+                if (fila_anterior.caja.estado == Estado.ocupado)
+                {
+                    var sumar = diferencia_horaria;
+                    fila_actual.caja.tiempoOcupado += sumar;
+                }
+                fila_actual.porc_ocupacion_caja = (fila_actual.caja.tiempoOcupado / fila_actual.reloj) * 100;
+
+
+                // Se calcula % de ocupacion de los empleados, para ello calculo el tiempo ocupado de cada uno (Métrica 1)
+
+                if (fila_anterior.empleados[0].estado == Estado.ocupado)
+                {
+                    var sumar1 = diferencia_horaria;
+                    fila_actual.empleados[0].tiempoOcupado += sumar1;
+                }
+                fila_actual.porc_ocupacion_empleado1 = (fila_actual.empleados[0].tiempoOcupado / fila_actual.reloj) * 100;
+
+
+
+                if (fila_anterior.empleados[1].estado == Estado.ocupado)
+                {
+                    var sumar2 = diferencia_horaria;
+                    fila_actual.empleados[1].tiempoOcupado += sumar2;
+                }
+                fila_actual.porc_ocupacion_empleado2 = (fila_actual.empleados[1].tiempoOcupado / fila_actual.reloj) * 100;
+
+                // Fin de métricas -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
                 // Reinicio las columnas que no deben arrastrarse
                 fila_actual.accion = -1;
@@ -729,7 +760,7 @@ namespace Simulacion_TP7.Tabla_Colas
                 }
 
 
-                // Cálculo de métricas ----------------------------------------------------------------------------------------------------------------------------------------------------
+                // Cálculo de métricas --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
                 // Cálculo del tiempo promedio de permanencia en cola de compra de ticket (Métrica 2)
@@ -763,10 +794,11 @@ namespace Simulacion_TP7.Tabla_Colas
                 else
                     fila_actual.porc_personas_ocupan_mesa_consumiendo = 0;
 
-                // Fin Métricas--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                // Fin Métricas----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-                    //Se cambia el orden de las filas y se muestra en la tabla (solo si se debe mostrar)
+                //Se cambia el orden de las filas y se muestra en la tabla (solo si se debe mostrar)
                 if ((i >= this.fila_desde - 1 && i < this.fila_desde + this.cant_filas - 1) || (i == this.iteraciones - 1 && this.iteraciones != this.fila_desde + this.cant_filas - 1))
                     cant_personas_actual = imprimirFila(fila_actual, cant_personas_actual);
                 fila_anterior = fila_actual;
@@ -777,39 +809,6 @@ namespace Simulacion_TP7.Tabla_Colas
                     this.persona_de_paso.bandera_de_paso = false;
                     this.persona_de_paso = null;
                 }
-
-                // Cálculo de métricas ----------------------------------------------------------------------------------------------------------------------------------------------------
-
-                // Estas métricas se calculan luego de cambiar el reloj anterior por el actual, debido a que se debe calcular desfasado (no suma al porcentaje si un servidor esta ocupado, sino que suma si estuvo ocupado en la iteracion anterior) 
-                // Se calcula % de ocupacion de la caja, para ello calculo el tiempo ocupado de la caja (Métrica 1)
-
-                if (fila_anterior.caja.estado == Estado.ocupado)
-                {
-                    var sumar = diferencia_horaria;
-                    fila_actual.caja.tiempoOcupado += sumar;
-                }
-                fila_actual.porc_ocupacion_caja = (fila_actual.caja.tiempoOcupado / fila_actual.reloj) * 100;
-
-
-                // Se calcula % de ocupacion de los empleados, para ello calculo el tiempo ocupado de cada uno (Métrica 1)
-
-                if (fila_anterior.empleados[0].estado == Estado.ocupado)
-                {
-                    var sumar1 = diferencia_horaria;
-                    fila_actual.empleados[0].tiempoOcupado += sumar1;
-                }
-                fila_actual.porc_ocupacion_empleado1 = (fila_actual.empleados[0].tiempoOcupado / fila_actual.reloj) * 100;
-
-
-
-                if (fila_anterior.empleados[1].estado == Estado.ocupado)
-                {
-                    var sumar2 = diferencia_horaria;
-                    fila_actual.empleados[1].tiempoOcupado += sumar2;
-                }
-                fila_actual.porc_ocupacion_empleado2 = (fila_actual.empleados[1].tiempoOcupado / fila_actual.reloj) * 100;
-
-                // Fin Métricas--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             }
         }
